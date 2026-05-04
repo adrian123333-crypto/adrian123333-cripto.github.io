@@ -53,34 +53,45 @@
 <script>
     let calendar;
 
-    // --- SECCIÓN DE EVALUACIONES EXTRAÍDAS DE LAS IMÁGENES ---
+    // --- SECCIÓN DE EVALUACIONES ACTUALIZADA ---
     const EVENTOS_FIJOS = [
+        // Abril 2026
+        { title: 'Portada de Valores', start: '2026-04-20', backgroundColor: '#ffc107' },
+
         // Mayo 2026
         { title: 'Examen de Matemática', start: '2026-05-05', backgroundColor: '#007bff' },
         { title: 'Informe de ITP', start: '2026-05-05', backgroundColor: '#343a40' },
+        { title: 'Mural de Valores', start: '2026-05-04', backgroundColor: '#ffc107' },
         { title: 'Taller de Biología', start: '2026-05-07', backgroundColor: '#28a745' },
         { title: 'Guía de Matemática', start: '2026-05-12', backgroundColor: '#007bff' },
+        { title: 'Examen de Lenguaje', start: '2026-05-14', backgroundColor: '#e83e8c' },
         { title: 'Examen de Física', start: '2026-05-14', backgroundColor: '#343a40' },
         { title: 'Debate de ITP', start: '2026-05-18', backgroundColor: '#343a40' },
         { title: 'Examen de Química', start: '2026-05-18', backgroundColor: '#343a40' },
+        { title: 'Análisis de Valores', start: '2026-05-18', backgroundColor: '#ffc107' },
         { title: 'Maqueta de Biología', start: '2026-05-20', backgroundColor: '#28a745' },
         { title: 'Quiz de Inglés', start: '2026-05-21', backgroundColor: '#17a2b8' },
         { title: 'Taller de Física', start: '2026-05-22', backgroundColor: '#343a40' },
+        { title: 'Ensayo de Lenguaje', start: '2026-05-25', backgroundColor: '#e83e8c' },
         { title: 'Examen de Biología', start: '2026-05-26', backgroundColor: '#28a745' },
         { title: '¿Estudio? de Matem.', start: '2026-05-28', backgroundColor: '#007bff' },
         
         // Junio 2026
+        { title: 'Taller de Valores', start: '2026-06-01', backgroundColor: '#ffc107' },
         { title: 'Exposición de ITP', start: '2026-06-02', backgroundColor: '#343a40' },
         { title: 'Examen de Inglés', start: '2026-06-04', backgroundColor: '#17a2b8' },
         { title: 'Exposición de Biología', start: '2026-06-04', backgroundColor: '#28a745' },
         { title: 'Taller de Física', start: '2026-06-04', backgroundColor: '#343a40' },
         { title: 'Ejercicios de Química', start: '2026-06-08', backgroundColor: '#343a40' },
         { title: 'Taller de Matemática', start: '2026-06-08', backgroundColor: '#007bff' },
+        { title: 'Debate de Lenguaje', start: '2026-06-11', backgroundColor: '#e83e8c' },
         { title: 'Examen de Física', start: '2026-06-12', backgroundColor: '#343a40' },
         { title: 'Taller de Inglés', start: '2026-06-12', backgroundColor: '#17a2b8' },
         { title: 'Reto de todas las m.', start: '2026-06-15', backgroundColor: '#007bff' },
+        { title: 'Examen de Valores', start: '2026-06-15', backgroundColor: '#ffc107' },
         { title: 'Examen de ITP', start: '2026-06-16', backgroundColor: '#343a40' },
         { title: 'Exposición de Química', start: '2026-06-22', backgroundColor: '#343a40' },
+        { title: 'Obra de Teatro Lenguaje', start: '2026-06-25', backgroundColor: '#e83e8c' },
         { title: 'Taller de Química', start: '2026-06-30', backgroundColor: '#343a40' }
     ];
 
@@ -91,7 +102,8 @@
         if (m.includes('fis')) return '#6f42c1'; 
         if (m.includes('qui')) return '#fd7e14'; 
         if (m.includes('ing')) return '#17a2b8'; 
-        if (m.includes('cast')) return '#e83e8c';
+        if (m.includes('cast') || m.includes('leng')) return '#e83e8c';
+        if (m.includes('val')) return '#ffc107'; // Amarillo para Valores
         if (m.includes('itp')) return '#343a40';
         return '#343a40'; 
     }
@@ -102,14 +114,20 @@
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            initialDate: '2026-05-01', // Para que abra directamente en el mes de las fotos
+            initialDate: '2026-05-01',
             locale: 'es',
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
             events: [...EVENTOS_FIJOS, ...personales],
             eventClick: function(info) {
-                if (confirm("¿Deseas eliminar esta evaluación de tu vista personal?")) {
-                    info.event.remove();
-                    guardarEnMemoria();
+                // Solo permite eliminar si no es un evento fijo del código
+                const esFijo = EVENTOS_FIJOS.some(f => f.title === info.event.title && f.start === info.event.startStr);
+                if (esFijo) {
+                    alert("Esta evaluación es parte del calendario escolar oficial y no se puede borrar desde aquí.");
+                } else {
+                    if (confirm("¿Deseas eliminar esta evaluación personal?")) {
+                        info.event.remove();
+                        guardarEnMemoria();
+                    }
                 }
             }
         });
