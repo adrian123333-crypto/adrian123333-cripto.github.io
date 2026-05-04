@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de 3er Año</title>
+    
+    <!-- Diseño y Calendario -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #f0f2f5; padding: 20px; font-family: system-ui, -apple-system, sans-serif; }
+        .container { max-width: 1000px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #calendar { margin-top: 25px; background: white; padding: 10px; border-radius: 10px; min-height: 600px; }
+        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); background-color: #ffffff; }
+        .fc-event { cursor: pointer; border: none !important; padding: 2px 5px; }
+        .fc-toolbar-title { font-size: 1.2rem !important; text-transform: capitalize; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="text-center mb-4">📅 Mis Evaluaciones - 3er Año</h2>
+
+    <!-- Formulario para que tú añadidas cosas rápido -->
+    <div class="card p-3 mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Materia</label>
+                <input type="text" id="materia" class="form-control" placeholder="Ej: Química">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Actividad</label>
+                <input type="text" id="actividad" class="form-control" placeholder="Ej: Examen Final">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fecha</label>
+                <input type="date" id="fecha" class="form-control">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button onclick="agregarEvento()" class="btn btn-primary w-100">Añadir</button>
+            </div>
+        </div>
+        <small class="text-muted mt-2">* Las que añadas aquí se guardan solo en tu dispositivo. Para que todos las vean, hay que editarlas en el código.</small>
+    </div>
+
+    <div id="calendar"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+    let calendar;
+
+    // --- SECCIÓN DE EVALUACIONES FIJAS (Aquí pones lo de la foto) ---
+    const EVENTOS_FIJOS = [
+        { title: 'Examen de Biología', start: '2026-05-15', backgroundColor: '#28a745' },
+        { title: 'Prueba de Química', start: '2026-05-18', backgroundColor: '#fd7e14' },
+        { title: 'Proyecto de Física', start: '2026-05-22', backgroundColor: '#6f42c1' }
+    ];
+
+    function obtenerColor(materia) {
+        const m = materia.toLowerCase();
+        if (m.includes('bio')) return '#28a745'; 
+        if (m.includes('mat')) return '#007bff'; 
+        if (m.includes('fis')) return '#6f42c1'; 
+        if (m.includes('qui')) return '#fd7e14'; 
+        if (m.includes('ing')) return '#17a2b8'; 
+        if (m.includes('cast')) return '#e83e8c';
+        return '#343a40'; 
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        
+        // Cargamos lo guardado en el navegador del usuario (personal)
+        const personales = JSON.parse(localStorage.getItem('mis_evaluaciones')) || [];
+
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
+            events: [...EVENTOS_FIJOS, ...personales], // Mezclamos fijas con personales
+            eventClick: function(info) {
+                if (confirm("¿Deseas eliminar esta evaluación de tu vista personal?")) {
+                    info.event.remove();
+                    guardarEnMemoria();
+                }
+            }
+        });
+        calendar.render();
+    });
+
+    function agregarEvento() {
+        const materia = document.getElementById('materia').value;
+        const actividad = document.getElementById('actividad').value;
+        const fecha = document.getElementById('fecha').value;
+
+        if (!materia || !actividad || !fecha) return alert("Llena todos los datos");
+
+        const nuevo = {
+            title: `${actividad} de ${materia}`,
+            start: fecha,
+            allDay: true,
+            backgroundColor: obtenerColor(materia)
+        };
+
+        calendar.addEvent(nuevo);
+        guardarEnMemoria();
+
+        // Limpiar campos
+        document.getElementById('materia').value = '';
+        document.getElementById('actividad').value = '';
+        document.getElementById('fecha').value = '';
+    }
+
+    function guardarEnMemoria() {
+        // Solo guardamos los que NO están en la lista fija para no duplicar
+        const todos = calendar.getEvents();
+        const soloPersonales = todos.filter(e => {
+            return !EVENTOS_FIJOS.some(f => f.title === e.title && f.start === e.startStr);
+        }).map(e => ({
+            title: e.title,
+            start: e.startStr,
+            allDay: e.allDay,
+            backgroundColor: e.backgroundColor
+        }));
+        
+        localStorage.setItem('mis_evaluaciones', JSON.stringify(soloPersonales));
+    }
+</script>
+
+</body>
+</html>
