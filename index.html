@@ -12,10 +12,39 @@
     <style>
         body { background-color: #f0f2f5; padding: 20px; font-family: system-ui, -apple-system, sans-serif; }
         .container { max-width: 1000px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        #calendar { margin-top: 25px; background: white; padding: 10px; border-radius: 10px; min-height: 600px; }
+        #calendar { margin-top: 20px; background: white; padding: 10px; border-radius: 10px; min-height: 600px; }
         .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); background-color: #ffffff; }
         .fc-event { cursor: pointer; border: none !important; padding: 2px 5px; }
         .fc-toolbar-title { font-size: 1.2rem !important; text-transform: capitalize; }
+
+        /* --- Estilos de la Leyenda --- */
+        .legend-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: white; /* Círculo interno para contraste */
+        }
     </style>
 </head>
 <body>
@@ -23,7 +52,7 @@
 <div class="container">
     <h2 class="text-center mb-4">📅 Mis Evaluaciones - 3er Año</h2>
 
-    <!-- Formulario para añadir eventos rápidos -->
+    <!-- Formulario para añadir eventos -->
     <div class="card p-3 mb-4">
         <div class="row g-3">
             <div class="col-md-4">
@@ -42,7 +71,19 @@
                 <button onclick="agregarEvento()" class="btn btn-primary w-100">Añadir</button>
             </div>
         </div>
-        <small class="text-muted mt-2">* Las que añadas aquí se guardan solo en tu dispositivo. Para que todos las vean, hay que editarlas en el código.</small>
+    </div>
+
+    <!-- LEYENDA TIPO MAPA -->
+    <div class="legend-container">
+        <div class="legend-item" style="background-color: #007bff;"><span class="legend-color"></span>Matemática</div>
+        <div class="legend-item" style="background-color: #28a745;"><span class="legend-color"></span>Biología</div>
+        <div class="legend-item" style="background-color: #FFA500;"><span class="legend-color"></span>Física</div>
+        <div class="legend-item" style="background-color: #800080;"><span class="legend-color"></span>Química</div>
+        <div class="legend-item" style="background-color: #e83e8c;"><span class="legend-color"></span>Lenguaje</div>
+        <div class="legend-item" style="background-color: #17a2b8;"><span class="legend-color"></span>Inglés</div>
+        <div class="legend-item" style="background-color: #ffc107; color: #212529;"><span class="legend-color"></span>Valores</div>
+        <div class="legend-item" style="background-color: #8B4513;"><span class="legend-color"></span>ITP</div>
+        <div class="legend-item" style="background-color: #808080;"><span class="legend-color"></span>General</div>
     </div>
 
     <div id="calendar"></div>
@@ -53,14 +94,10 @@
 <script>
     let calendar;
 
-    // --- SECCIÓN DE EVALUACIONES ACTUALIZADA ---
     const EVENTOS_FIJOS = [
-        // Abril 2026
-        { title: 'Portada de Valores', start: '2026-04-20', backgroundColor: '#ffc107' },
-
-        // Mayo 2026
+        { title: 'Portada de Valores', start: '2026-04-20', backgroundColor: '#ffc107', textColor: '#212529' },
         { title: 'Informe de ITP', start: '2026-05-05', backgroundColor: '#8B4513' },
-        { title: 'Mural de Valores', start: '2026-05-04', backgroundColor: '#ffc107' },
+        { title: 'Mural de Valores', start: '2026-05-04', backgroundColor: '#ffc107', textColor: '#212529' },
         { title: 'Examen de Matemática', start: '2026-05-07', backgroundColor: '#007bff' },
         { title: 'Taller de Biología', start: '2026-05-07', backgroundColor: '#28a745' },
         { title: 'Guía de Matemática', start: '2026-05-12', backgroundColor: '#007bff' },
@@ -68,16 +105,14 @@
         { title: 'Examen de Física', start: '2026-05-14', backgroundColor: '#FFA500' },
         { title: 'Debate de ITP', start: '2026-05-18', backgroundColor: '#8B4513' },
         { title: 'Examen de Química', start: '2026-05-18', backgroundColor: '#800080' },
-        { title: 'Análisis de Valores', start: '2026-05-18', backgroundColor: '#ffc107' },
+        { title: 'Análisis de Valores', start: '2026-05-18', backgroundColor: '#ffc107', textColor: '#212529' },
         { title: 'Maqueta de Biología', start: '2026-05-20', backgroundColor: '#28a745' },
         { title: 'Quiz de Inglés', start: '2026-05-21', backgroundColor: '#17a2b8' },
         { title: 'Taller de Física', start: '2026-05-22', backgroundColor: '#FFA500' },
         { title: 'Ensayo de Lenguaje', start: '2026-05-25', backgroundColor: '#e83e8c' },
         { title: 'Examen de Biología', start: '2026-05-26', backgroundColor: '#28a745' },
         { title: '¿Estudio? de Matem.', start: '2026-05-28', backgroundColor: '#007bff' },
-        
-        // Junio 2026
-        { title: 'Taller de Valores', start: '2026-06-01', backgroundColor: '#ffc107' },
+        { title: 'Taller de Valores', start: '2026-06-01', backgroundColor: '#ffc107', textColor: '#212529' },
         { title: 'Exposición de ITP', start: '2026-06-02', backgroundColor: '#8B4513' },
         { title: 'Examen de Inglés', start: '2026-06-04', backgroundColor: '#17a2b8' },
         { title: 'Exposición de Biología', start: '2026-06-04', backgroundColor: '#28a745' },
@@ -88,7 +123,7 @@
         { title: 'Examen de Física', start: '2026-06-12', backgroundColor: '#FFA500' },
         { title: 'Taller de Inglés', start: '2026-06-12', backgroundColor: '#17a2b8' },
         { title: 'Reto de todas las materias.', start: '2026-06-15', backgroundColor: '#808080' },
-        { title: 'Examen de Valores', start: '2026-06-15', backgroundColor: '#ffc107' },
+        { title: 'Examen de Valores', start: '2026-06-15', backgroundColor: '#ffc107', textColor: '#212529' },
         { title: 'Examen de ITP', start: '2026-06-16', backgroundColor: '#8B4513' },
         { title: 'Exposición de Química', start: '2026-06-22', backgroundColor: '#800080' },
         { title: 'Obra de Teatro Lenguaje', start: '2026-06-25', backgroundColor: '#e83e8c' },
@@ -99,13 +134,13 @@
         const m = materia.toLowerCase();
         if (m.includes('bio')) return '#28a745'; 
         if (m.includes('mat')) return '#007bff'; 
-        if (m.includes('fis')) return '#6f42c1'; 
-        if (m.includes('qui')) return '#fd7e14'; 
+        if (m.includes('fis')) return '#FFA500'; 
+        if (m.includes('qui')) return '#800080'; 
         if (m.includes('ing')) return '#17a2b8'; 
         if (m.includes('cast') || m.includes('leng')) return '#e83e8c';
-        if (m.includes('val')) return '#ffc107'; // Amarillo para Valores
-        if (m.includes('itp')) return '#343a40';
-        return '#343a40'; 
+        if (m.includes('val')) return '#ffc107';
+        if (m.includes('itp')) return '#8B4513';
+        return '#808080'; 
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -119,10 +154,9 @@
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
             events: [...EVENTOS_FIJOS, ...personales],
             eventClick: function(info) {
-                // Solo permite eliminar si no es un evento fijo del código
                 const esFijo = EVENTOS_FIJOS.some(f => f.title === info.event.title && f.start === info.event.startStr);
                 if (esFijo) {
-                    alert("Esta evaluación es parte del calendario escolar oficial y no se puede borrar desde aquí.");
+                    alert("Esta evaluación es parte del calendario escolar oficial.");
                 } else {
                     if (confirm("¿Deseas eliminar esta evaluación personal?")) {
                         info.event.remove();
@@ -141,11 +175,13 @@
 
         if (!materia || !actividad || !fecha) return alert("Llena todos los datos");
 
+        const color = obtenerColor(materia);
         const nuevo = {
             title: `${actividad} de ${materia}`,
             start: fecha,
             allDay: true,
-            backgroundColor: obtenerColor(materia)
+            backgroundColor: color,
+            textColor: (materia.toLowerCase().includes('val')) ? '#212529' : 'white'
         };
 
         calendar.addEvent(nuevo);
@@ -164,7 +200,8 @@
             title: e.title,
             start: e.startStr,
             allDay: e.allDay,
-            backgroundColor: e.backgroundColor
+            backgroundColor: e.backgroundColor,
+            textColor: e.textColor
         }));
         
         localStorage.setItem('mis_evaluaciones', JSON.stringify(soloPersonales));
