@@ -23,7 +23,7 @@
 <div class="container">
     <h2 class="text-center mb-4">📅 Mis Evaluaciones - 3er Año</h2>
 
-    <!-- Formulario para que tú añadidas cosas rápido -->
+    <!-- Formulario para añadir eventos rápidos -->
     <div class="card p-3 mb-4">
         <div class="row g-3">
             <div class="col-md-4">
@@ -53,11 +53,38 @@
 <script>
     let calendar;
 
-    // --- SECCIÓN DE EVALUACIONES FIJAS (Aquí pones lo de la foto) ---
+    // --- SECCIÓN DE EVALUACIONES EXTRAÍDAS DE LAS IMÁGENES ---
     const EVENTOS_FIJOS = [
+        // Mayo 2026
+        { title: 'Examen de Matemática', start: '2026-05-05', backgroundColor: '#007bff' },
+        { title: 'Informe de ITP', start: '2026-05-05', backgroundColor: '#343a40' },
+        { title: 'Taller de Biología', start: '2026-05-07', backgroundColor: '#28a745' },
+        { title: 'Guía de Matemática', start: '2026-05-12', backgroundColor: '#007bff' },
+        { title: 'Examen de Física', start: '2026-05-14', backgroundColor: '#343a40' },
         { title: 'Examen de Biología', start: '2026-05-15', backgroundColor: '#28a745' },
+        { title: 'Debate de ITP', start: '2026-05-18', backgroundColor: '#343a40' },
+        { title: 'Examen de Química', start: '2026-05-18', backgroundColor: '#343a40' },
         { title: 'Prueba de Química', start: '2026-05-18', backgroundColor: '#fd7e14' },
-        { title: 'Proyecto de Física', start: '2026-05-22', backgroundColor: '#6f42c1' }
+        { title: 'Maqueta de Biología', start: '2026-05-20', backgroundColor: '#28a745' },
+        { title: 'Quiz de Inglés', start: '2026-05-21', backgroundColor: '#17a2b8' },
+        { title: 'Proyecto de Física', start: '2026-05-22', backgroundColor: '#6f42c1' },
+        { title: 'Taller de Física', start: '2026-05-22', backgroundColor: '#343a40' },
+        { title: 'Examen de Biología', start: '2026-05-26', backgroundColor: '#28a745' },
+        { title: '¿Estudio? de Matem.', start: '2026-05-28', backgroundColor: '#007bff' },
+        
+        // Junio 2026
+        { title: 'Exposición de ITP', start: '2026-06-02', backgroundColor: '#343a40' },
+        { title: 'Examen de Inglés', start: '2026-06-04', backgroundColor: '#17a2b8' },
+        { title: 'Exposición de Biología', start: '2026-06-04', backgroundColor: '#28a745' },
+        { title: 'Taller de Física', start: '2026-06-04', backgroundColor: '#343a40' },
+        { title: 'Ejercicios de Química', start: '2026-06-08', backgroundColor: '#343a40' },
+        { title: 'Taller de Matemática', start: '2026-06-08', backgroundColor: '#007bff' },
+        { title: 'Examen de Física', start: '2026-06-12', backgroundColor: '#343a40' },
+        { title: 'Taller de Inglés', start: '2026-06-12', backgroundColor: '#17a2b8' },
+        { title: 'Reto de todas las m.', start: '2026-06-15', backgroundColor: '#007bff' },
+        { title: 'Examen de ITP', start: '2026-06-16', backgroundColor: '#343a40' },
+        { title: 'Exposición de Química', start: '2026-06-22', backgroundColor: '#343a40' },
+        { title: 'Taller de Química', start: '2026-06-30', backgroundColor: '#343a40' }
     ];
 
     function obtenerColor(materia) {
@@ -68,20 +95,20 @@
         if (m.includes('qui')) return '#fd7e14'; 
         if (m.includes('ing')) return '#17a2b8'; 
         if (m.includes('cast')) return '#e83e8c';
+        if (m.includes('itp')) return '#343a40';
         return '#343a40'; 
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
-        
-        // Cargamos lo guardado en el navegador del usuario (personal)
         const personales = JSON.parse(localStorage.getItem('mis_evaluaciones')) || [];
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
+            initialDate: '2026-05-01', // Para que abra directamente en el mes de las fotos
             locale: 'es',
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
-            events: [...EVENTOS_FIJOS, ...personales], // Mezclamos fijas con personales
+            events: [...EVENTOS_FIJOS, ...personales],
             eventClick: function(info) {
                 if (confirm("¿Deseas eliminar esta evaluación de tu vista personal?")) {
                     info.event.remove();
@@ -109,14 +136,12 @@
         calendar.addEvent(nuevo);
         guardarEnMemoria();
 
-        // Limpiar campos
         document.getElementById('materia').value = '';
         document.getElementById('actividad').value = '';
         document.getElementById('fecha').value = '';
     }
 
     function guardarEnMemoria() {
-        // Solo guardamos los que NO están en la lista fija para no duplicar
         const todos = calendar.getEvents();
         const soloPersonales = todos.filter(e => {
             return !EVENTOS_FIJOS.some(f => f.title === e.title && f.start === e.startStr);
